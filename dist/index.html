@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f2ea" />
+    <title>Semester Studio · UOL Timetables</title>
+    <meta
+      name="description"
+      content="A calmer way to plan university. Import UOL semester-wise timetable PDFs, browse every section, build custom schedules and export your week."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#"
+        ><span class="brand-mark">✳</span
+        ><span>semester<span class="brand-small">STUDIO</span></span></a
+      >
+      <div class="workspace">YOUR WORKSPACE</div>
+      <nav>
+        <button class="nav active" data-view="preset">
+          <span>▦</span> Timetables</button
+        ><button class="nav" data-view="custom">
+          <span>⌘</span> Custom builder</button
+        ><button class="nav" data-view="saved">
+          <span>▱</span> Saved schedules <small id="saved-count">0</small>
+        </button>
+      </nav>
+      <div class="side-note">
+        <div class="line-art">✧</div>
+        <h3>A little less chaos.<br />A little more clarity.</h3>
+        <p>Make room for what matters, one week at a time.</p>
+      </div>
+      <button class="import-side" data-action="import">
+        <span>↥</span> Import timetable PDF <b>＋</b>
+      </button>
+      <div class="side-bottom">
+        <span class="mini-avatar">U</span>
+        <div>
+          University of Lahore<small>Independent student planner</small>
+        </div>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <div class="breadcrumb">
+          Workspace <span>/</span> <b id="crumb">Timetables</b>
+        </div>
+        <div class="header-actions">
+          <span class="local-indicator"><i></i> Saved on this device</span
+          ><button
+            class="icon-btn"
+            data-action="help"
+            aria-label="How it works"
+          >
+            ?
+          </button>
+        </div>
+      </header>
+      <div class="main-content">
+        <section class="intro">
+          <div>
+            <div class="eyebrow">A CALMER KIND OF CAMPUS LIFE</div>
+            <h1 id="page-title">Your week, <em>thoughtfully planned.</em></h1>
+            <p id="page-description">
+              Find your section. Shape your schedule. Make the semester yours.
+            </p>
+          </div>
+          <span class="term-tag" id="term-tag"
+            >◈ &nbsp; FALL 2026 <small>V 1.6</small></span
+          >
+        </section>
+        <section class="source-banner">
+          <span class="source-icon">▤</span>
+          <div>
+            <b id="source-title">CS & IT · Semester-wise timetable</b>
+            <p id="source-description">Loading your timetable…</p>
+          </div>
+          <span class="status-pill" id="source-status">Loading</span
+          ><button class="text-btn" data-action="import">
+            Change PDF <span>↗</span>
+          </button>
+        </section>
+        <div class="workspace-bar">
+          <div class="tabs" role="tablist" aria-label="Timetable mode">
+            <button
+              class="selected"
+              role="tab"
+              aria-selected="true"
+              data-view="preset"
+            >
+              Section timetable</button
+            ><button role="tab" aria-selected="false" data-view="custom">
+              Custom timetable <span>✧</span>
+            </button>
+          </div>
+          <button class="text-btn" data-view="saved">
+            My schedules <span id="saved-inline">0</span> ↗
+          </button>
+        </div>
+        <section id="saved-panel" class="hidden"></section>
+        <section id="planner">
+          <div class="setup">
+            <div class="section-fields">
+              <label
+                >PROGRAM<select
+                  id="program"
+                  aria-label="Program"
+                ></select></label
+              ><label
+                >SEMESTER<select
+                  id="semester"
+                  aria-label="Semester"
+                ></select></label
+              ><label
+                >SECTION<select id="section" aria-label="Section"></select
+              ></label>
+            </div>
+            <div class="setup-actions">
+              <button class="button secondary" id="copy-custom">
+                ＋ Customize this section</button
+              ><button class="button primary" id="save">▱ Save schedule</button>
+            </div>
+          </div>
+          <section id="custom-panel" class="custom-panel hidden">
+            <div class="custom-heading">
+              <div>
+                <h3>Build a week that works for you.</h3>
+                <p>
+                  Mix courses from any section. Adding a course includes all its
+                  weekly meetings.
+                </p>
+              </div>
+              <div class="row">
+                <button class="text-btn" id="clear">Clear all</button
+                ><button class="button secondary" id="manual">
+                  ＋ Add class
+                </button>
+              </div>
+            </div>
+            <div class="catalog-controls">
+              <label
+                >Find a course<input
+                  id="course-search"
+                  placeholder="Search course, instructor or room…" /></label
+              ><button class="button secondary" id="auto-open">
+                ✧ Generate alternatives
+              </button>
+            </div>
+            <div id="catalog" class="catalog"></div>
+            <div id="selected-courses" class="selected-courses"></div>
+          </section>
+          <div class="schedule-card">
+            <div class="schedule-toolbar">
+              <div class="schedule-name">
+                <span class="tiny-mark">▦</span>
+                <div>
+                  <h2 id="schedule-title">Loading…</h2>
+                  <p id="schedule-subtitle">Your weekly overview</p>
+                </div>
+                <span class="clash-free" id="clash-status">Checking</span>
+              </div>
+              <div class="row export-controls">
+                <div class="view-switch">
+                  <button
+                    class="selected"
+                    data-layout="week"
+                    aria-label="Week grid"
+                  >
+                    ▦</button
+                  ><button data-layout="list" aria-label="List view">☷</button>
+                </div>
+                <div class="export-wrap">
+                  <button class="button secondary" id="export">
+                    ↧ <span>Export</span> <small>⌄</small>
+                  </button>
+                  <div class="export-menu hidden" id="export-menu">
+                    <button data-export="png">Download PNG image</button
+                    ><button data-export="pdf">Download PDF</button
+                    ><button data-export="ics">Download calendar (.ics)</button
+                    ><button data-export="csv">Download CSV</button
+                    ><button data-export="json">
+                      Download schedule (.json)
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="clash-detail" class="hidden"></div>
+            <div class="table-scroll">
+              <div id="calendar" aria-live="polite"></div>
+            </div>
+            <div class="schedule-footer">
+              <div class="legend">
+                <span><i class="dot sage"></i>Lectures</span
+                ><span><i class="dot clay"></i>Labs</span
+                ><span><i class="dot sand"></i>Personal</span>
+              </div>
+              <span>All times in PKT · 24-hour format</span>
+            </div>
+          </div>
+          <div class="bottom-grid">
+            <div class="insight-card">
+              <span class="insight-icon">◷</span>
+              <div>
+                <b id="hours">—</b>
+                <p>scheduled hours / week</p>
+              </div>
+              <div class="insight-divider"></div>
+              <span class="insight-icon">▦</span>
+              <div>
+                <b id="classes">—</b>
+                <p>weekly meetings</p>
+              </div>
+            </div>
+            <div class="tip-card">
+              <span>✧</span>
+              <p>
+                <b>Your timetable, your way.</b> Combine sections in the custom
+                builder to create a schedule that fits your life.
+              </p>
+              <button
+                class="text-btn"
+                data-view="custom"
+                aria-label="Open custom builder"
+              >
+                ↗
+              </button>
+            </div>
+          </div>
+        </section>
+        <footer>
+          <span>Made for the rhythm of university life.</span
+          ><span>Semester Studio <i>✳</i> Plan with a little peace.</span>
+        </footer>
+      </div>
+    </main>
+    <dialog id="modal"><div id="modal-body"></div></dialog>
+    <input
+      type="file"
+      accept="application/pdf,.pdf"
+      id="pdf-input"
+      hidden
+    /><input
+      type="file"
+      accept="application/json,.json"
+      id="json-input"
+      hidden
+    />
+    <div id="toast" role="status"></div>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>
