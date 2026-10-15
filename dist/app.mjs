@@ -395,69 +395,69 @@ function importDialog() {
     if (e.dataTransfer.files[0]) importPDF(e.dataTransfer.files[0]);
   };
 }
-async function importPDF(file) {
-  if (importing) return;
-  if (!/\.pdf$/i.test(file.name) || file.size > 30 * 1024 * 1024) {
-    toast("Choose a PDF smaller than 30 MB.");
-    return;
-  }
-  importing = true;
-  if (!$("#import-progress")) importDialog();
-  const progress = $("#import-progress");
-  progress.innerHTML = '<p class="modal-copy">Opening PDF…</p>';
-  try {
-    const pdfjs = await import("./vendor/pdf.mjs");
-    pdfjs.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.mjs";
-    const data = await parseTimetable(
-      pdfjs,
-      new Uint8Array(await file.arrayBuffer()),
-      (n, total) => {
-        progress.innerHTML = `<p class="modal-copy">Reading page ${n} of ${total}…</p>`;
-      },
-    );
-    modal(
-      top("Your semester, decoded.") +
-        `<div class="import-report"><b>${data.sections.length} sections · ${data.events.length} meetings · ${data.pages} pages</b><br>${escape(data.title)}</div><p class="modal-copy">Review the preview below, then use this timetable. You can inspect any class against its original PDF page.</p><div class="review-table"><table><thead><tr><th>Section</th><th>Course</th><th>Day / time</th><th>Room</th></tr></thead><tbody>${data.events
-          .slice(0, 30)
-          .map(
-            (e) =>
-              `<tr><td>${escape(e.section)}</td><td>${escape(e.subject)}</td><td>${DAYS[e.day].slice(0, 3)} ${fmt(e.start)}–${fmt(e.end)}</td><td>${escape(e.room)}</td></tr>`,
-          )
-          .join(
-            "",
-          )}</tbody></table></div><p class="muted">Showing the first ${Math.min(30, data.events.length)} meetings. All ${data.events.length} will be available.</p>${data.warnings.length ? `<div class="error">${data.warnings.map(escape).join("<br>")}</div>` : ""}<div class="modal-footer"><button class="text-btn" id="try-import">Choose another PDF</button><button class="button primary" id="apply-import">Use this timetable ↗</button></div>`,
-    );
-    $("#try-import").onclick = importDialog;
-    $("#apply-import").onclick = async () => {
-      dataset = data;
-      dataset.fileName = file.name;
-      persist("ss-dataset", dataset);
-      if (importedURL) URL.revokeObjectURL(importedURL);
-      importedURL = URL.createObjectURL(file);
-      sourceUrl = importedURL;
-      try {
-        await putPDF(file);
-      } catch {
-        toast(
-          "Timetable imported. Source PDF will be available until this page closes.",
-        );
-      }
-      selectedSection = data.sections[0];
-      updateSource();
-      populateFilters();
-      setView("preset");
-      close();
-      toast(`Ready. ${data.sections.length} sections are now available.`);
-    };
-  } catch (err) {
-    if (progress.isConnected)
-      progress.innerHTML = `<div class="error">${escape(err.message)}<br>Try the original PDF rather than an image or scanned copy.</div>`;
-    else toast(err.message);
-  } finally {
-    importing = false;
-    $("#pdf-input").value = "";
-  }
-}
+// async function importPDF(file) {
+//   if (importing) return;
+//   if (!/\.pdf$/i.test(file.name) || file.size > 30 * 1024 * 1024) {
+//     toast("Choose a PDF smaller than 30 MB.");
+//     return;
+//   }
+//   importing = true;
+//   if (!$("#import-progress")) importDialog();
+//   const progress = $("#import-progress");
+//   progress.innerHTML = '<p class="modal-copy">Opening PDF…</p>';
+//   try {
+//     const pdfjs = await import("./vendor/pdf.mjs");
+//     pdfjs.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.mjs";
+//     const data = await parseTimetable(
+//       pdfjs,
+//       new Uint8Array(await file.arrayBuffer()),
+//       (n, total) => {
+//         progress.innerHTML = `<p class="modal-copy">Reading page ${n} of ${total}…</p>`;
+//       },
+//     );
+//     modal(
+//       top("Your semester, decoded.") +
+//         `<div class="import-report"><b>${data.sections.length} sections · ${data.events.length} meetings · ${data.pages} pages</b><br>${escape(data.title)}</div><p class="modal-copy">Review the preview below, then use this timetable. You can inspect any class against its original PDF page.</p><div class="review-table"><table><thead><tr><th>Section</th><th>Course</th><th>Day / time</th><th>Room</th></tr></thead><tbody>${data.events
+//           .slice(0, 30)
+//           .map(
+//             (e) =>
+//               `<tr><td>${escape(e.section)}</td><td>${escape(e.subject)}</td><td>${DAYS[e.day].slice(0, 3)} ${fmt(e.start)}–${fmt(e.end)}</td><td>${escape(e.room)}</td></tr>`,
+//           )
+//           .join(
+//             "",
+//           )}</tbody></table></div><p class="muted">Showing the first ${Math.min(30, data.events.length)} meetings. All ${data.events.length} will be available.</p>${data.warnings.length ? `<div class="error">${data.warnings.map(escape).join("<br>")}</div>` : ""}<div class="modal-footer"><button class="text-btn" id="try-import">Choose another PDF</button><button class="button primary" id="apply-import">Use this timetable ↗</button></div>`,
+//     );
+//     $("#try-import").onclick = importDialog;
+//     $("#apply-import").onclick = async () => {
+//       dataset = data;
+//       dataset.fileName = file.name;
+//       persist("ss-dataset", dataset);
+//       if (importedURL) URL.revokeObjectURL(importedURL);
+//       importedURL = URL.createObjectURL(file);
+//       sourceUrl = importedURL;
+//       try {
+//         await putPDF(file);
+//       } catch {
+//         toast(
+//           "Timetable imported. Source PDF will be available until this page closes.",
+//         );
+//       }
+//       selectedSection = data.sections[0];
+//       updateSource();
+//       populateFilters();
+//       setView("preset");
+//       close();
+//       toast(`Ready. ${data.sections.length} sections are now available.`);
+//     };
+//   } catch (err) {
+//     if (progress.isConnected)
+//       progress.innerHTML = `<div class="error">${escape(err.message)}<br>Try the original PDF rather than an image or scanned copy.</div>`;
+//     else toast(err.message);
+//   } finally {
+//     importing = false;
+//     $("#pdf-input").value = "";
+//   }
+// }
 function openDB() {
   return new Promise((resolve, reject) => {
     let r = indexedDB.open("semester-studio", 1);
